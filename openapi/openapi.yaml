@@ -1,0 +1,87 @@
+openapi: 3.1.0
+info:
+  title: URL Shortener API
+  version: 1.0.0
+  description: |
+    Serverless URL shortener API designed for AWS Lambda + API Gateway + DynamoDB.
+servers:
+  - url: https://api.jkrocha.com.br
+    description: Production
+  - url: http://localhost:8080
+    description: Local Docker
+paths:
+  /api/v1/links:
+    post:
+      operationId: createShortLink
+      tags: [Links]
+      summary: Create a short URL from an original URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateShortLinkRequest'
+      responses:
+        '201':
+          description: Short link created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateShortLinkResponse'
+        '400':
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /{shortCode}:
+    get:
+      operationId: redirectByShortCode
+      tags: [Links]
+      summary: Redirect to original URL
+      parameters:
+        - in: path
+          name: shortCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to original URL
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        '404':
+          description: Short link was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CreateShortLinkRequest:
+      type: object
+      required: [originalLink]
+      properties:
+        originalLink:
+          type: string
+          format: uri
+          example: https://www.jkrocha.com.br/blog/url-shortener
+    CreateShortLinkResponse:
+      type: object
+      required: [originalLink, shortLink]
+      properties:
+        originalLink:
+          type: string
+          format: uri
+        shortLink:
+          type: string
+          format: uri
+    ErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string

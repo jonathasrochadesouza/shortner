@@ -1,0 +1,30 @@
+<main class="layout">
+  <mat-card class="card">
+    <mat-card-header>
+      <mat-card-title>Serverless URL Shortener</mat-card-title>
+      <mat-card-subtitle>Create short URLs with AWS Lambda + DynamoDB</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Original URL</mat-label>
+          <input matInput type="url" formControlName="originalLink" placeholder="https://example.com/some/long/path" />
+          <mat-error *ngIf="form.controls.originalLink.hasError('required')">Original URL is required.</mat-error>
+          <mat-error *ngIf="form.controls.originalLink.hasError('pattern')">Enter a valid URL with http:// or https://.</mat-error>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
+          <mat-icon>link</mat-icon>
+          {{ loading() ? 'Generating...' : 'Generate short URL' }}
+        </button>
+      </form>
+
+      <section class="result" *ngIf="shortLink() as generatedLink">
+        <p>Your short URL is ready:</p>
+        <a [href]="generatedLink" target="_blank" rel="noopener noreferrer">{{ generatedLink }}</a>
+        <button mat-stroked-button type="button" (click)="copyShortLink()">Copy</button>
+      </section>
+    </mat-card-content>
+  </mat-card>
+</main>

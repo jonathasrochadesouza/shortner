@@ -1,0 +1,14 @@
+# Node
+frontend/node_modules/
+frontend/.angular/
+
+# Java
+backend/target/
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/.terraform.lock.hcl
+infra/terraform/tfplan
+
+# OS
+.DS_Store

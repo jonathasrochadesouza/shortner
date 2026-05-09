@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+shortener:
+  table-name: url-shortner
+  domain-base-url: https://api.jkrocha.com.br
+  dynamodb-endpoint: ""
