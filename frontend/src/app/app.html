@@ -15,7 +15,6 @@
         </mat-form-field>
 
         <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
-          <mat-icon>link</mat-icon>
           {{ loading() ? 'Generating...' : 'Generate short URL' }}
         </button>
       </form>

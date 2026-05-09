@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ShortenerApiService } from './services/shortener-api.service';
@@ -19,25 +18,22 @@ import { ShortenerApiService } from './services/shortener-api.service';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule,
     MatSnackBarModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly shortenerApi = inject(ShortenerApiService);
+  private readonly snackBar = inject(MatSnackBar);
+
   protected readonly loading = signal(false);
   protected readonly shortLink = signal<string | null>(null);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     originalLink: ['', [Validators.required, Validators.pattern('^(https?)://.+$')]]
   });
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly shortenerApi: ShortenerApiService,
-    private readonly snackBar: MatSnackBar
-  ) {}
 
   protected submit(): void {
     if (this.form.invalid) {
