@@ -5,7 +5,9 @@ import com.jkrocha.shortner.dto.CreateShortLinkResponse;
 import com.jkrocha.shortner.model.UrlMapping;
 import com.jkrocha.shortner.repository.UrlMappingRepository;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.NoSuchElementException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,7 @@ public class UrlShortenerService {
     private final ShortenerProperties properties;
     private final SecureRandom random;
 
+    @Autowired
     public UrlShortenerService(UrlMappingRepository repository, ShortenerProperties properties) {
         this(repository, properties, new SecureRandom());
     }
@@ -42,6 +45,14 @@ public class UrlShortenerService {
         return repository.findByShortLink(shortCode)
                 .map(UrlMapping::getOriginalLink)
                 .orElseThrow(() -> new NoSuchElementException("Short link not found"));
+    }
+
+    public List<CreateShortLinkResponse> listLinks() {
+        return repository.findAll().stream()
+                .map(m -> new CreateShortLinkResponse(
+                        m.getOriginalLink(),
+                        properties.domainBaseUrl() + "/" + m.getShortLink()))
+                .toList();
     }
 
     private String generateUniqueShortCode() {

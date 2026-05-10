@@ -2,6 +2,7 @@ package com.jkrocha.shortner.repository;
 
 import com.jkrocha.shortner.config.ShortenerProperties;
 import com.jkrocha.shortner.model.UrlMapping;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -29,5 +30,10 @@ public class DynamoDbUrlMappingRepository implements UrlMappingRepository {
     @Override
     public Optional<UrlMapping> findByShortLink(String shortLink) {
         return Optional.ofNullable(table.getItem(Key.builder().partitionValue(shortLink).build()));
+    }
+
+    @Override
+    public List<UrlMapping> findAll() {
+        return table.scan().items().stream().toList();
     }
 }

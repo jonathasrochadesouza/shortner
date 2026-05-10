@@ -3,85 +3,210 @@ info:
   title: URL Shortener API
   version: 1.0.0
   description: |
-    Serverless URL shortener API designed for AWS Lambda + API Gateway + DynamoDB.
+    ## Overview
+    Serverless URL shortener built on **AWS Lambda + API Gateway + DynamoDB**, fronted by an Angular SPA.
+
+    Submit any valid `http://` or `https://` URL to receive a compact short link. Visiting the short
+    link issues an HTTP 302 redirect to the original destination. All links are stored in DynamoDB and
+    retrievable via the list endpoint.
+
+    ## Authentication
+    This API is currently **open** — no authentication is required.
+
+    ## Rate limiting
+    Throttling is handled at the AWS API Gateway level. Default burst: 5 000 req/s, steady: 10 000 req/s.
+
+    ## Base URLs
+    | Environment | URL |
+    |-------------|-----|
+    | Production  | `https://api.jkrocha.com.br` |
+    | Local Docker | `http://localhost:8080` |
+  contact:
+    name: JKRocha
+    url: https://www.jkrocha.com.br
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
 servers:
   - url: https://api.jkrocha.com.br
     description: Production
   - url: http://localhost:8080
     description: Local Docker
+
+tags:
+  - name: Links
+    description: |
+      Operations for creating, listing, and resolving shortened URLs.
+
+      Short codes are 8-character alphanumeric strings (`[0-9a-zA-Z]{8}`) generated with a
+      cryptographically secure random source. Uniqueness is guaranteed before persistence.
+
 paths:
   /api/v1/links:
     post:
       operationId: createShortLink
       tags: [Links]
-      summary: Create a short URL from an original URL
+      summary: Create a short link
+      description: |
+        Accepts a full URL and returns a shortened version. The short code is generated
+        randomly (8 chars, base-62 alphabet) and stored in DynamoDB. Duplicate original
+        URLs will receive a **new** short code each time this endpoint is called.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateShortLinkRequest'
+            examples:
+              typical:
+                summary: Standard blog post URL
+                value:
+                  originalLink: https://www.jkrocha.com.br/blog/url-shortener
+              long_query:
+                summary: URL with query parameters
+                value:
+                  originalLink: https://example.com/search?q=serverless+aws&lang=en&page=3
       responses:
         '201':
-          description: Short link created successfully
+          description: Short link created successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateShortLinkResponse'
+              examples:
+                created:
+                  summary: Successful creation
+                  value:
+                    originalLink: https://www.jkrocha.com.br/blog/url-shortener
+                    shortLink: https://api.jkrocha.com.br/aB3dEf9Z
         '400':
-          description: Invalid request payload
+          description: |
+            The request body is missing or invalid. Possible causes:
+            - `originalLink` is absent or blank.
+            - `originalLink` does not start with `http://` or `https://`.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_field:
+                  summary: Missing originalLink
+                  value:
+                    message: originalLink is mandatory
+                invalid_url:
+                  summary: Invalid URL scheme
+                  value:
+                    message: originalLink must start with http:// or https://
+
+    get:
+      operationId: listLinks
+      tags: [Links]
+      summary: List all short links
+      description: |
+        Returns every URL mapping stored in DynamoDB as a flat array. The response is
+        **unordered** — DynamoDB `Scan` does not guarantee insertion order.
+
+        > **Note:** This endpoint performs a full table scan. Use with caution on large datasets.
+      responses:
+        '200':
+          description: Array of all stored short links (may be empty).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateShortLinkResponse'
+              examples:
+                with_links:
+                  summary: Two stored links
+                  value:
+                    - originalLink: https://www.jkrocha.com.br/blog/url-shortener
+                      shortLink: https://api.jkrocha.com.br/aB3dEf9Z
+                    - originalLink: https://github.com/jkrocha/url-shortner
+                      shortLink: https://api.jkrocha.com.br/Xy7mNpQr
+                empty:
+                  summary: No links yet
+                  value: []
+
   /{shortCode}:
     get:
       operationId: redirectByShortCode
       tags: [Links]
       summary: Redirect to original URL
+      description: |
+        Resolves the given `shortCode` to its original URL and issues an HTTP **302 Found**
+        redirect via the `Location` header. Browsers and HTTP clients will follow the redirect
+        automatically.
+
+        If the code does not exist in DynamoDB, a `404` JSON response is returned instead.
       parameters:
         - in: path
           name: shortCode
           required: true
           schema:
             type: string
+            pattern: '^[0-9a-zA-Z]{8}$'
+            example: aB3dEf9Z
+          description: |
+            The 8-character alphanumeric identifier of the short link.
       responses:
         '302':
-          description: Redirect to original URL
+          description: Redirect to the original URL.
           headers:
             Location:
+              description: The full original URL to redirect to.
               schema:
                 type: string
                 format: uri
+                example: https://www.jkrocha.com.br/blog/url-shortener
         '404':
-          description: Short link was not found
+          description: No mapping found for the given short code.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                not_found:
+                  summary: Unknown short code
+                  value:
+                    message: Short link not found
+
 components:
   schemas:
     CreateShortLinkRequest:
       type: object
       required: [originalLink]
+      description: Payload for creating a new short link.
       properties:
         originalLink:
           type: string
           format: uri
+          description: The full URL to shorten. Must start with `http://` or `https://`.
           example: https://www.jkrocha.com.br/blog/url-shortener
+
     CreateShortLinkResponse:
       type: object
       required: [originalLink, shortLink]
+      description: Represents a persisted URL mapping.
       properties:
         originalLink:
           type: string
           format: uri
+          description: The original, unshortened URL.
+          example: https://www.jkrocha.com.br/blog/url-shortener
         shortLink:
           type: string
           format: uri
+          description: The fully-qualified short URL (base domain + short code).
+          example: https://api.jkrocha.com.br/aB3dEf9Z
+
     ErrorResponse:
       type: object
       required: [message]
+      description: Generic error envelope returned on 4xx responses.
       properties:
         message:
           type: string
+          description: Human-readable description of the error.
+          example: originalLink is mandatory

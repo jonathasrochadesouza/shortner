@@ -21,4 +21,8 @@ export class ShortenerApiService {
   createShortLink(payload: CreateShortLinkRequest): Observable<CreateShortLinkResponse> {
     return this.httpClient.post<CreateShortLinkResponse>(this.apiUrl, payload);
   }
+
+  listLinks(): Observable<CreateShortLinkResponse[]> {
+    return this.httpClient.get<CreateShortLinkResponse[]>(this.apiUrl);
+  }
 }

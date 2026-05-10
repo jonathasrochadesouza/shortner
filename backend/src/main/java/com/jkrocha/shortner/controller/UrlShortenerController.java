@@ -5,6 +5,7 @@ import com.jkrocha.shortner.dto.CreateShortLinkResponse;
 import com.jkrocha.shortner.service.UrlShortenerService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,11 @@ public class UrlShortenerController {
     @PostMapping("/api/v1/links")
     public ResponseEntity<CreateShortLinkResponse> createShortLink(@Valid @RequestBody CreateShortLinkRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createShortLink(request.originalLink()));
+    }
+
+    @GetMapping("/api/v1/links")
+    public ResponseEntity<List<CreateShortLinkResponse>> listLinks() {
+        return ResponseEntity.ok(service.listLinks());
     }
 
     @GetMapping("/{shortCode}")
