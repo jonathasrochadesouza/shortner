@@ -1,7 +1,7 @@
 # 🔗 URL Shortener
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/b8fc7644-e56b-4fb4-a8c0-df76af52d2ea" alt="URL Shortener Logo" width="480" />
+  <img src="https://github.com/user-attachments/assets/b8fc7644-e56b-4fb4-a8c0-df76af52d2ea" alt="URL Shortener Logo" width="550" />
 </p>
 
 > A **cloud-native**, **serverless** URL Shortener built with modern Java and AWS infrastructure — fast, scalable, and production-ready.
