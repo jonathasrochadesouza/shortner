@@ -1,0 +1,130 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 1.375rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-brand { display: inline-flex; align-items: center; }
+
+.header-project-logo {
+  height: 36px;
+  width: auto;
+  mix-blend-mode: screen;
+  opacity: 0.92;
+  transition: opacity var(--ease);
+
+  &:hover { opacity: 1; }
+}
+
+.header-company {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-by {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+.header-company-logo {
+  height: 18px;
+  width: auto;
+  opacity: 0.55;
+  transition: opacity var(--ease);
+
+  &:hover { opacity: 0.85; }
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.content {
+  text-align: center;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.code-label {
+  font-size: clamp(5.5rem, 22vw, 9.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  background: linear-gradient(
+    160deg,
+    rgba(212, 197, 169, 0.65) 0%,
+    rgba(212, 197, 169, 0.12) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.025em;
+}
+
+.message {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-width: 360px;
+}
+
+.btn-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.8125rem 1.5rem;
+  background: var(--cream);
+  color: #1a1a1a;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--ease), transform var(--ease);
+
+  &:hover {
+    background: var(--cream-hover);
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+.footer {
+  padding: 1.5rem 2.5rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: rgba(154, 149, 144, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 580px) {
+  .header { padding: 1.125rem 1.25rem; }
+  .header-project-logo { height: 28px; }
+  .header-company-logo { height: 14px; }
+}

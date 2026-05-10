@@ -1,0 +1,64 @@
+# =============================================================================
+# terraform.tfvars.example
+# =============================================================================
+# Example variable values for the URL Shortener infrastructure.
+#
+# Usage:
+#   1. Copy this file: cp terraform.tfvars.example terraform.tfvars
+#   2. Replace placeholder values with your actual AWS account details.
+#   3. terraform.tfvars is gitignored — never commit real credentials or ARNs.
+# =============================================================================
+
+# --- General ---
+
+# Prefix used for naming all AWS resources (e.g., "url-shortner-api").
+project_name = "url-shortner"
+
+# AWS region for backend resources (Lambda, DynamoDB, API Gateway).
+# Note: the frontend ACM certificate must always be in us-east-1, regardless.
+aws_region = "us-east-1"
+
+# Deployment environment label. Used in resource tags (e.g., "prod", "staging").
+environment = "prod"
+
+# --- DNS ---
+
+# Root domain registered in Route53. Subdomains will be created under it.
+root_domain = "jkrocha.com.br"
+
+# Subdomain for the backend API. Resolves to: https://api.jkrocha.com.br
+api_subdomain = "api"
+
+# Subdomain for the Angular frontend. Resolves to: https://shortner.jkrocha.com.br
+frontend_subdomain = "shortner"
+
+# Route53 hosted zone ID for root_domain.
+# Find it in the AWS Console under Route53 -> Hosted Zones.
+route53_zone_id = "Z1234567890ABC"
+
+# --- TLS Certificates (ACM) ---
+
+# Regional ACM certificate ARN for the API custom domain.
+# Must be in the same region as aws_region.
+api_certificate_arn = "arn:aws:acm:us-east-1:111111111111:certificate/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+
+# ACM certificate ARN for the frontend custom domain.
+# MUST be in us-east-1 — CloudFront only supports certificates from us-east-1.
+frontend_certificate_arn = "arn:aws:acm:us-east-1:111111111111:certificate/ffffffff-1111-2222-3333-444444444444"
+
+# --- Database ---
+
+# Name of the DynamoDB table. Will be created by Terraform if it does not exist.
+dynamodb_table_name = "url-shortner"
+
+# --- Compute ---
+
+# Path to the compiled backend artifact (JAR packaged as ZIP for Lambda).
+# Build it with: cd backend && mvn package -DskipTests
+lambda_zip_path = "../artifacts/url-shortner-backend.zip"
+
+# --- Frontend ---
+
+# Globally unique S3 bucket name for the Angular build output.
+# Recommended convention: <project>-frontend-<env>-<account-id>
+frontend_bucket_name = "url-shortner-frontend-prod-111111111111"
