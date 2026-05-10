@@ -1,5 +1,9 @@
 # 🔗 URL Shortener
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/55719706-5aef-4c48-91c3-f4875a934fad" alt="URL Shortener Logo" width="220" />
+</p>
+
 > A **cloud-native**, **serverless** URL Shortener built with modern Java and AWS infrastructure — fast, scalable, and production-ready.
 
 ![Java](https://img.shields.io/badge/Java-21_LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
