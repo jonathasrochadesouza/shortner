@@ -1,5 +1,3 @@
-# 🔗 URL Shortener
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/b8fc7644-e56b-4fb4-a8c0-df76af52d2ea" alt="URL Shortener Logo" width="550" />
 </p>
